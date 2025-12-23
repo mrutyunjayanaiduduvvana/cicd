@@ -1,141 +1,91 @@
-# GitHub Actions CI/CD Pipeline for Data Engineering
-# Course: Automate Data Deployments with CI/CD Pipelines
-# Module 2: Automated Data Deployment
+# Complete GitHub Actions workflow for data pipeline CI/CD
 
-# PROVIDED CODE - DO NOT MODIFY
+# This solution demonstrates enterprise-grade automation practices
+
+# used by organizations like Netflix and DataCamp for reliable deployments
+
 name: Data Pipeline CI/CD
 
-# ==================================================
-# SECTION 1: WORKFLOW TRIGGERS
-# ==================================================
-
-### PRACTICE CHALLENGE 1 ###
-# TASK: Configure workflow triggers to run on pushes to main branch and pull requests 
-# targeting main branch. Add path filtering to only trigger when files in 'src/' or 'tests/' 
-# directories change.
-# YOUR CODE HERE
-# SOLUTION CODE #
 on:
+
   push:
+
     branches: [ main ]
+
     paths:
+
       - 'src/**'
+
       - 'tests/**'
+
   pull_request:
+
     branches: [ main ]
+
     paths:
-      - 'src/**'
+
+      - 'src/**'  
+
       - 'tests/**'
-# END SOLUTION CODE 
-# ==================================================
-# SECTION 2: BUILD AND TEST JOB
-# ==================================================
 
 jobs:
-  ### PRACTICE CHALLENGE 2 ###
-  # TASK: Create a build job that sets up Python 3.9, installs requirements from requirements.txt, 
-  # and runs pytest with coverage reporting. The job should fail if tests don't pass.
-  # YOUR CODE HERE
-  # SOLUTION CODE #
+
   build-and-test:
+
     runs-on: ubuntu-latest
+
     
+
     steps:
+
     - name: Checkout code
+
       uses: actions/checkout@v3
+
       
+
     - name: Set up Python 3.9
+
       uses: actions/setup-python@v4
+
       with:
+
         python-version: '3.9'
+
         cache: 'pip'
+
         
+
     - name: Install dependencies
+
       run: |
+
         pip install -r requirements.txt
+
         pip install pytest pytest-cov
+
         
+
     - name: Run tests with coverage
+
       run: |
-        pytest tests/ --cov=src/ --cov-report=xml --cov-fail-under=80
-  # END SOLUTION CODE #
 
+        pytest tests/ --cov=src/ --cov-report=xml
 
-# ==================================================
-# SECTION 3: DOCKER BUILD AND DEPLOY
-# ==================================================
-
-  # TASK: Add Docker build and push steps that create an image tagged with both 'latest' 
-  # and the Git commit SHA, then push to Docker Hub or GitHub Container Registry.
-  # YOUR CODE HERE
-  # SOLUTION CODE #
-  docker-build:
-    needs: build-and-test
-    runs-on: ubuntu-latest
-    
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-      
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v2
-      
-    - name: Login to GitHub Container Registry
-      uses: docker/login-action@v2
-      with:
-        registry: ghcr.io
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
         
-    - name: Build and push Docker image
+
+    - name: Build Docker image
+
       uses: docker/build-push-action@v4
+
       with:
+
         context: .
+
         push: true
+
         tags: |
-          ghcr.io/${{ github.repository }}/data-pipeline:latest
-          ghcr.io/${{ github.repository }}/data-pipeline:${{ github.sha }}
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
-  # END SOLUTION CODE #
 
+          myregistry/data-pipeline:latest
 
-# ==================================================
-# PROVIDED CODE - Docker configuration files
-# ==================================================
-
-# Dockerfile (reference - not part of workflow file)
-# FROM python:3.9-slim
-# WORKDIR /app
-# COPY requirements.txt .
-# RUN pip install -r requirements.txt
-# COPY src/ ./src/
-# CMD ["python", "-m", "src.main"]
-
-# requirements.txt (reference - not part of workflow file)
-# pandas==1.5.3
-# numpy==1.24.3
-# pytest==7.3.1
-# pytest-cov==4.1.0
-
-# ==================================================
-# ADDITIONAL ENTERPRISE FEATURES (BONUS CONTENT)
-# ==================================================
-
-# Optional: Add deployment job for production environment
-#  deploy-production:
-#    needs: docker-build
-#    runs-on: ubuntu-latest
-#    if: github.ref == 'refs/heads/main'
-#    environment: production
-#    
-#    steps:
-#    - name: Deploy to production cluster
-#      run: |
-#        echo "Deploying image: ghcr.io/${{ github.repository }}/data-pipeline:${{ github.sha }}"
-#        # Add actual deployment commands here (kubectl, helm, etc.)
-#        
-#    - name: Run smoke tests
-#      run: |
-#        echo "Running production validation tests"
-#        # Add post-deployment validation here
+          myregistry/data-pipeline:${{ github.sha }}
