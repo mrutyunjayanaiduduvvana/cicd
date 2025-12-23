@@ -69,10 +69,5 @@ jobs:
 
         context: .
 
-        push: true
-
-        tags: |
-
-          myregistry/data-pipeline:latest
-
-          myregistry/data-pipeline:${{ github.sha }}
+        push: false     # disable push
+        tags: data-pipeline:latest
