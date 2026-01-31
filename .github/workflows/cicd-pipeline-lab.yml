@@ -1,17 +1,31 @@
-# PROVIDED CODE - DO NOT Modify
+# PROVIDED CODE - DO NOT MODIFY
 name: Data Pipeline CI/CD
 
 # ==================================================
 # SECTION 1: WORKFLOW TRIGGERS
 # ==================================================
 
+### PRACTICE CHALLENGE 1 ###
+# TASK: Configure workflow triggers to run on pushes to main branch and pull requests 
+# targeting main branch. Add path filtering to only trigger when files in 'src/' or 'tests/' 
+# directories change.
+# YOUR CODE HERE
+
 on:
+  # Add your trigger configuration here
   push:
     branches: [ main ]
-    
+    paths:
+      - 'src/**'
+      - 'tests/**'
   pull_request:
     branches: [ main ]
-    
+    paths:
+      - 'src/**'
+      - 'tests/**'
+
+
+
 # ==================================================
 # SECTION 2: BUILD AND TEST JOB
 # ==================================================
@@ -42,10 +56,15 @@ jobs:
         pytest tests/ --cov=src/ --cov-report=xml --cov-fail-under=80
 
 
-  # ==================================================
-  # DOCKER BUILD + PUSH JOB (Your Docker Hub)
-  # ==================================================
+# ==================================================
+# SECTION 3: DOCKER BUILD AND DEPLOY
+# ==================================================
 
+  ### PRACTICE CHALLENGE 3 ###
+  # TASK: Add Docker build and push steps that create an image tagged with both 'latest' 
+  # and the Git commit SHA, then push to Docker Hub or GitHub Container Registry.
+  # YOUR CODE HERE
+  
   docker-build:
     needs: build-and-test
     runs-on: ubuntu-latest
