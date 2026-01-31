@@ -15,16 +15,8 @@ on:
   # Add your trigger configuration here
   push:
     branches: [ main ]
-    paths:
-      - 'src/**'
-      - 'tests/**'
   pull_request:
     branches: [ main ]
-    paths:
-      - 'src/**'
-      - 'tests/**'
-
-
 
 # ==================================================
 # SECTION 2: BUILD AND TEST JOB
